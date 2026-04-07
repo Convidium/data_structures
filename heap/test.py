@@ -1,8 +1,11 @@
 from heap_class import MaxHeap, MinHeap
+from benchmark import benchmark_heapsort
+import random
 
-init_list = [1, 7, 3, 5, 6, 22, 11, 34, 5, 2, 7, 10]
 
-my_list = MaxHeap(init_list[:], 3)
-print(my_list)
-my_list.sort_heap()
-print(my_list)
+list_amplitude = random.randint(1, 300)
+list_size = 20000
+
+random_list = [list_amplitude for _ in range(list_size)]
+print(benchmark_heapsort(MaxHeap, random_list))
+print(benchmark_heapsort(MaxHeap, random_list))
