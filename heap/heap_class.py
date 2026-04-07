@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
 
 class BaseHeap(ABC):
-    def __init__(self, value):
+    def __init__(self, array, arity=2):
         self.heap = []
-        if isinstance(value, list) and len(value) > 0: 
-            self.build_heap(value)
+        self.arity = arity
+        if isinstance(array, list) and len(array) > 0: 
+            self.build_heap(array)
     
     def parent(self, index):
         if index == 0: return 0
@@ -36,13 +37,9 @@ class BaseHeap(ABC):
         extreme_idx = index
         
         while True:
-            left = 2*index+1
-            right = 2*index+2
-            
-            if left < heap_size and self._compare(self.heap[extreme_idx], self.heap[left]):
-                extreme_idx = left
-            if right < heap_size and self._compare(self.heap[extreme_idx], self.heap[right]):
-                extreme_idx = right
+            for k in range(1, self.arity+1):
+                if self.arity*index+k < heap_size and self._compare(self.heap[extreme_idx], self.heap[self.arity*index+k]):
+                    extreme_idx = self.arity*index+k
             if extreme_idx != index:
                 self.heap[index], self.heap[extreme_idx] = self.heap[extreme_idx], self.heap[index]
                 index = extreme_idx
@@ -73,8 +70,8 @@ class BaseHeap(ABC):
     
 class MaxHeap(BaseHeap):
     def _compare(self, parent_val, child_val):
-        return parent_val < child_val
+        return parent_val > child_val
 
 class MinHeap(BaseHeap):
     def _compare(self, parent_val, child_val):
-        return parent_val > child_val
+        return parent_val < child_val
