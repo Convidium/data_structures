@@ -8,9 +8,9 @@ class BaseHeap(ABC):
             self.build_heap(array)
     
     def parent(self, index):
-        if index == 0: return 0
         if len(self.heap) > 0:
-            return (index-1)//2
+            return (index-1)//self.arity
+        else: return 0
         
     def insert(self, value):
         self.heap.append(value)
@@ -27,19 +27,19 @@ class BaseHeap(ABC):
         return maximum
             
     def heapify_up(self, index):
-        while index != 0 and self._compare(self.heap[self.parent(index)], self.heap[index]):
+        while index != 0 and self._compare(self.heap[self.heap[index], self.parent(index)]):
             self.heap[index], self.heap[self.parent(index)] = self.heap[self.parent(index)], self.heap[index]        
             index = self.parent(index)
     
     def heapify_down(self, index, heap_size=None):
         if heap_size is None:
             heap_size = len(self.heap)
-        extreme_idx = index
-        
         while True:
+            extreme_idx = index
             for k in range(1, self.arity+1):
-                if self.arity*index+k < heap_size and self._compare(self.heap[extreme_idx], self.heap[self.arity*index+k]):
-                    extreme_idx = self.arity*index+k
+                child_idx = self.arity*index+k
+                if child_idx < heap_size and self._compare(self.heap[child_idx], self.heap[extreme_idx]):
+                    extreme_idx = child_idx
             if extreme_idx != index:
                 self.heap[index], self.heap[extreme_idx] = self.heap[extreme_idx], self.heap[index]
                 index = extreme_idx
@@ -48,7 +48,7 @@ class BaseHeap(ABC):
     
     def build_heap(self, array):
         self.heap = array[:]
-        lowest_node_i = len(self.heap)//2-1
+        lowest_node_i = len(self.heap)//self.arity-2
         for i in range(lowest_node_i, -1, -1):
             self.heapify_down(i)
             
@@ -65,13 +65,13 @@ class BaseHeap(ABC):
         return f"Heap: {self.heap}"
     
     @abstractmethod
-    def _compare(self, parent_val, child_val):
+    def _compare(self, first_val, second_val):
         pass
     
 class MaxHeap(BaseHeap):
-    def _compare(self, parent_val, child_val):
-        return parent_val > child_val
+    def _compare(self, first_val, second_val):
+        return first_val > second_val
 
 class MinHeap(BaseHeap):
-    def _compare(self, parent_val, child_val):
-        return parent_val < child_val
+    def _compare(self, first_val, second_val):
+        return first_val < second_val
