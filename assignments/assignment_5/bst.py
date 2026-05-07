@@ -261,43 +261,61 @@ class BinarySearchTree(MutableMapping[int, Any]):
         found_node = self.find(key)
         
         if found_node.left is None and found_node.right is None:
-            if found_node.left is None:
+            if found_node.parent is None:
+                self._root = None
+            elif found_node.parent.left == found_node:
                 found_node.parent.left = None
-                found_node.parent = None
-            if found_node.right is None:
+            else:
                 found_node.parent.right = None
-                found_node.parent = None
-        elif found_node.left is None and found_node.right is not None:
-            found_node.right.parent = found_node.parent
-            found_node.parent.right = found_node.right
+        
+        elif found_node.right is None:
+            if found_node.parent is None:
+                self._root = found_node.left
+            elif found_node.parent.left == found_node:
+               found_node.parent.left = found_node.left
+            else:
+                found_node.parent.right = found_node.left
+                
+            if found_node.left:
+                found_node.left.parent = found_node.parent
             
-            found_node.parent = None
-            found_node.right = None
-        elif found_node.left is not None and found_node.right is None:
-            found_node.left.parent = found_node.parent
-            found_node.parent.left = found_node.left
-            
-            found_node.parent = None
-            found_node.left = None
+        elif found_node.left is None:
+            if found_node.parent is None:
+                self._root = found_node.right
+            elif found_node.parent.left == found_node:
+                found_node.parent.left = found_node.right
+            else:
+                found_node.parent.right = found_node.right
+            if found_node.right:
+                found_node.right.parent = found_node.parent
         else:
             inorder_successor = self.return_min_key_in_tree(found_node.right)
             
-    def node_replacer(self, first_node: TreeNode, second_node: TreeNode) -> None:
-            # f_node_parent = first_node.parent
-            # s_node_parent = second_node.parent
-            # 
-            # f_node_subtree = 0
-            # 
-            # if f_node_parent.right == first_node:
-                # f_node_subtree = 1
-                # 
-            # if s_node_parent.left
-            # 
-            # f_node_children = (first_node.left, first_node.right)
-            # s_node_children = (second_node.left, second_node.right)
+            if inorder_successor.parent != found_node:
+                inorder_successor.parent.left = inorder_successor.right
+                if inorder_successor.right:
+                    inorder_successor.right.parent = inorder_successor.parent
+                inorder_successor.right = found_node.right
+                inorder_successor.right.parent = inorder_successor
+              
+            if found_node.parent is None:
+                self._root = inorder_successor
+                inorder_successor.parent = None
+            elif found_node.parent.left == found_node:
+                inorder_successor.parent = found_node.parent
+                found_node.parent.left = inorder_successor
+            elif found_node.parent.right == found_node:
+                inorder_successor.parent = found_node.parent
+                found_node.parent.right = inorder_successor
+                
+            inorder_successor.left = found_node.left
+            inorder_successor.left.parent = inorder_successor
             
-            
-            
+            found_node.parent = None
+            found_node.left = None
+            found_node.right = None
+        self._size -= 1
+                
             
 
     def inorder(self) -> Iterable[TreeNode]:
@@ -424,8 +442,31 @@ class BinarySearchTree(MutableMapping[int, Any]):
                 0: The number of comparisons walking through the list.
                 1: The number of comparisons used in the bst.
         """
-        ...
-        # TODO
+        list_comparisons = 0
+        for item in for_list:
+            list_comparisons += 1
+            if item == key:
+                break
+        
+        tree = BinarySearchTree()
+        for x in for_list:
+            tree.insert(x, None)
+            
+        bst_comparisons = 0
+        current_node = tree.root
+        
+        while current_node is not None:
+            bst_comparisons += 1
+            if key == current_node.key:
+                break
+            
+            bst_comparisons += 1
+            if key < current_node.key:
+                current_node = current_node.left
+            else:
+                current_node = current_node.right
+                
+        return (list_comparisons, bst_comparisons)
 
     @property
     def root(self) -> "TreeNode | None":
